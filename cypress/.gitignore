@@ -1,0 +1,30 @@
+# Node modules
+node_modules/
+
+# Cypress specific
+cypress/videos/
+cypress/screenshots/
+cypress/plugins/
+cypress/parallel/
+
+# Log files
+*.log
+*.log.*
+
+# Environment variables
+.env
+
+# IDE specific files
+.idea/
+*.iml
+.vscode/
+*.sublime-workspace
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# Build files
+/dist/
+/build/
+coverage/
