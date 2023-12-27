@@ -10,7 +10,7 @@ describe("Category Tests", () => {
             for (let i = 0; i < size; i++) {
                 let menuItemText = $list[i].textContent.trim().toLowerCase();
                 cy.get("@menuItems").eq(i).click()
-                cy.get('h1').then(($title) => {
+                cy.get('.page-title h1').then(($title) => {
                     let titleText = $title.text().trim().toLowerCase();
                     expect(menuItemText).to.eq(titleText);
                 })
@@ -19,7 +19,7 @@ describe("Category Tests", () => {
         })
     })
 
-    it.only("Check if sub-categories have a correct title and url", () => {
+    it("Check if sub-categories have a correct title and url", () => {
         cy.get("ul[class$='notmobile'] > li > ul").as("menuItemsWithSubItems")
         cy.get("@menuItemsWithSubItems").then(($menuItemsWithSubItems) => {
             let size = $menuItemsWithSubItems.length;
@@ -46,7 +46,7 @@ describe("Category Tests", () => {
         })
 
         function verifyTitleAndUrl(expectedText: string) {
-            cy.get('h1').then(($title) => {
+            cy.get('.page-title h1').then(($title) => {
                 let titleText = $title.text().trim().toLowerCase()
                 expect(expectedText).to.eq(titleText)
             })
