@@ -1,65 +1,54 @@
 describe("Category Tests", () => {
-    beforeEach(() => {
-        cy.visit("https://demo.nopcommerce.com/")
+  beforeEach(() => {
+    cy.visit("https://demo.nopcommerce.com/")
+  })
+
+  it("Check if categories have a correct title and url", () => {
+    cy.get("ul[class$='notmobile'] > li > a")
+      .as("categoriesList")
+      .each(($elem, index: number) => {
+        const categoryText: string = $elem.text().trim().toLowerCase();
+        cy.get("@categoriesList").eq(index).click();
+        cy.get(".page-title h1")
+          .invoke("text")
+          .then((titleText) => {
+            expect(categoryText).to.eq(titleText.trim().toLowerCase());
+            cy.url().should("contain", categoryText.replace(" ", "-"));
+          })
+      })
+  })
+
+  it("Check if sub-categories have a correct title and url", () => {
+    cy.get("ul[class$='notmobile'] > li > ul")
+      .as("menuItemsWithSubItems")
+      .each((_, menuIndex) => {
+        cy.get("ul[class$='notmobile'] > li > ul")
+          .eq(menuIndex)
+          .find("li a")
+          .as("subMenuItems")
+          .each(($subMenuItem, subMenuIndex) => {
+            cy.get("@menuItemsWithSubItems").parent().eq(menuIndex).realHover()
+            cy.get("@subMenuItems").eq(subMenuIndex).click()
+            verifyTitleAndUrl($subMenuItem.text())
+            cy.get("@menuItemsWithSubItems").parent().eq(menuIndex).realHover()
+          })
+      })
+  })
+
+  function verifyTitleAndUrl(expectedText: string) {
+    cy.get('.page-title h1').then(($title) => {
+      let titleText = $title.text().trim().toLowerCase()
+      expect(expectedText.toLowerCase().trim()).to.eq(titleText)
     })
+    cy.url().should("include", formatMenuText(expectedText))
+  }
 
-    it("Check if categories have a correct title and url", () => {
-        cy.get("ul[class$='notmobile'] > li > a").as("menuItems")
-        cy.get("@menuItems").then(($list) => {
-            let size = $list.length;
-            for (let i = 0; i < size; i++) {
-                let menuItemText = $list[i].textContent.trim().toLowerCase();
-                cy.get("@menuItems").eq(i).click()
-                cy.get('.page-title h1').then(($title) => {
-                    let titleText = $title.text().trim().toLowerCase();
-                    expect(menuItemText).to.eq(titleText);
-                })
-                cy.url().should("include", menuItemText.replace(" ", "-"))
-            }
-        })
-    })
-
-    it("Check if sub-categories have a correct title and url", () => {
-        cy.get("ul[class$='notmobile'] > li > ul").as("menuItemsWithSubItems")
-        cy.get("@menuItemsWithSubItems").then(($menuItemsWithSubItems) => {
-            let size = $menuItemsWithSubItems.length;
-            for (let i = 0; i < size; i++) {
-                cy.get("@menuItemsWithSubItems").eq(i).realHover()
-                cy.get("ul[class$='notmobile'] > li > ul").eq(i).find("li a")
-                    .as("subMenuItems")
-                cy.get("@subMenuItems").then(($subMenuList) => {
-                    let subMenuSize = $subMenuList.length;
-                    const subMenuTextContent = [];
-                    cy.log($subMenuList.text())
-                    $subMenuList.each(function (index, item) {
-                        subMenuTextContent.push(Cypress.$(item).text().toLowerCase().trim())
-                    })
-                    for (let index = 0; index < subMenuSize; index++) {
-                        cy.get("@menuItemsWithSubItems").parent().eq(i).realHover()
-                        cy.get("@subMenuItems").eq(index).click()
-
-                        verifyTitleAndUrl(subMenuTextContent[index])
-                        cy.get("@menuItemsWithSubItems").parent().eq(i).realHover()
-                    }
-                })
-            }
-        })
-
-        function verifyTitleAndUrl(expectedText: string) {
-            cy.get('.page-title h1').then(($title) => {
-                let titleText = $title.text().trim().toLowerCase()
-                expect(expectedText).to.eq(titleText)
-            })
-            cy.url().should("include", formatMenuText(expectedText))
-        }
-
-        function formatMenuText(text: string) {
-            return text
-                .toLowerCase()
-                .replace(/[&:]/g, ' ') // Replace & and : with space
-                .trim() // Remove leading and trailing spaces
-                .replace(/\s+/g, '-'); // Replace all spaces with hyphens
-        }
-    })
+  function formatMenuText(text: string) {
+    return text
+      .toLowerCase()
+      .replace(/[&:]/g, ' ') // Replace & and : with space
+      .trim() // Remove leading and trailing spaces
+      .replace(/\s+/g, '-'); // Replace all spaces with hyphens
+  }
 })
 
