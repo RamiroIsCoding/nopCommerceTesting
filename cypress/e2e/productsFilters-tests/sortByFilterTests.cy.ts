@@ -7,9 +7,9 @@ enum SortingOptions {
   CreatedOn = "Created on"
 }
 
-describe("", () => {
+describe("Check sort by functionality", () => {
   beforeEach(() => {
-    cy.visit("https://demo.nopcommerce.com/notebooks");
+    cy.visit("/notebooks");
   })
 
   it("Check if sort by DESCENDING PRICES work as expected", () => {
